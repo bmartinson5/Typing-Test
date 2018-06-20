@@ -1,18 +1,12 @@
 # Type Master: A Typing Test App
 
-A functional type training application built using Raact and MangoDB
+A functional type training application built using React, Node and MongoDB
 
 ## Authors:
 
-Fahad Alarefi: <fahrifi@gmail.com>  
+Ben Martinson: <bmartin5@uoregon.edu>   //Frontend 
 
-Ben Martinson: <bmartin5@uoregon.edu>
-
-Ziming Guo: <zimingg@uoregon.edu>
-
-John Dechert: <jdechert@uoregon.edu> 
-
-Evan Steingass: <esteing2@uoregon.edu>
+Fahad Alarefi: <fahrifi@gmail.com>  	//Backend
 
 
 ### Prerequisites:  
