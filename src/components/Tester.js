@@ -20,19 +20,12 @@ class Tester extends Component {
     this.errorLocations = [];
     this.wordIndex = 0;
 
-    var sampleTextArray = textSamples[this.props.diffu];
-    var choosenText = Math.floor(Math.random() * sampleTextArray.length)
-    const sample = sampleTextArray[choosenText];
-    let trainingCheck = this.props.training
-    if(trainingCheck === true){
-      this.props.updateTexts(this.props.diffu, choosenText)
-    }
-    this.sampleArray = sample.split(" ");
+    this.spaceErrors = []
+    this.sampleArray = []
+    this.retrieveRandomText = this.retrieveRandomText.bind(this);
 
-    this.spaceErrors = Array.apply(null, Array(this.sampleArray.length)).map(
-      Number.prototype.valueOf,
-      0
-    );
+    this.retrieveRandomText();
+
     this.prevKeyWasSpace = true;
     this.prevKeyWasSpace2 = false;
     this.prevKeyDelete = false;
@@ -42,14 +35,13 @@ class Tester extends Component {
     for (var i = 1; i < this.sampleArray.length; ++i) {
       wordC[i] = wordC[i - 1] + this.sampleArray[i - 1].length;
     }
+    this.wordCount = wordC;
 
-    var wordArray = Array.apply(null, Array(this.sampleArray.length)).map(
+    this.wordIC = Array.apply(null, Array(this.sampleArray.length)).map(
       Number.prototype.valueOf,
       0
     );
 
-    this.wordIC = wordArray;
-    this.wordCount = wordC;
 
     this.state = {
       input: "",
@@ -59,7 +51,7 @@ class Tester extends Component {
       testOver: false,
       timeChoice: this.props.timeChoice,
       testNumber: this.props.testNumber,
-      training: trainingCheck
+      training: this.props.training
 
     };
 
@@ -81,13 +73,30 @@ class Tester extends Component {
     });
   }
 
+  retrieveRandomText(){
+    const { diffu, training } = this.props;
+    var choosenText = Math.floor(Math.random() * textSamples[diffu].length)
+    const sample = textSamples[diffu][choosenText];
+
+    if(training === true){
+      this.props.updateTexts(diffu, choosenText)
+    }
+    this.sampleArray = sample.split(" ");
+    this.spaceErrors = Array.apply(null, Array(this.sampleArray.length)).map(
+      Number.prototype.valueOf,
+      0
+    );
+  }
+
+
   handleChange(event) {
-    if(this.wordIndex+1 === this.sampleArray.length &&
-      this.wordIC[this.wordIndex] >= this.sampleArray[this.sampleArray.length-1].length) {
+    const {sampleArray, wordIndex, wordIC, prevKeyWasSpace2 } = this;
+    if(wordIndex+1 === sampleArray.length &&
+      wordIC[wordIndex] >= sampleArray[sampleArray.length-1].length) {
         this.testIsOver()
       }
     let keyValue = event.target.value.charAt(event.target.value.length - 1)
-    if (keyValue !== " " || !this.prevKeyWasSpace2){
+    if (keyValue !== " " || !prevKeyWasSpace2){
       if(keyValue === " ") this.prevKeyWasSpace2 = true
       else this.prevKeyWasSpace2 = false
 
@@ -96,8 +105,9 @@ class Tester extends Component {
   }
 
   handleKeyChange(event) {
-    if ((event.key !== " " || !this.prevKeyWasSpace) &&
-        (event.key !== " " || this.wordIC[this.wordIndex] !== 0 || !this.prevKeyDelete)) {
+    const {wordIndex, wordIC, prevKeyWasSpace, prevKeyDelete } = this;
+    if ((event.key !== " " || !prevKeyWasSpace) &&
+        (event.key !== " " || wordIC[wordIndex] !== 0 || !prevKeyDelete)) {
       if (event.key === "Backspace") this.handleBackSpace();
       else if (event.key === " ") {
         this.handleSpaceKey();
@@ -115,26 +125,28 @@ class Tester extends Component {
   }
 
   handleSpaceKey() {
-    let lenCurrentWord = this.sampleArray[this.wordIndex].length;
-    if (this.wordIC[this.wordIndex] < lenCurrentWord) {
-      let numOfErrors = lenCurrentWord - this.wordIC[this.wordIndex];
+    const {sampleArray, wordIndex, wordIC, prevKeyWasSpace } = this;
+    let lenCurrentWord = sampleArray[wordIndex].length;
+    if (wordIC[wordIndex] < lenCurrentWord) {
+      let numOfErrors = lenCurrentWord - wordIC[wordIndex];
       this.setState({
         errorCount: this.state.errorCount + numOfErrors
       });
-      this.spaceErrors[this.wordIndex] = numOfErrors;
-      this.addToWordErrorList(this.sampleArray[this.wordIndex]);
+      this.spaceErrors[wordIndex] = numOfErrors;
+      this.addToWordErrorList(sampleArray[wordIndex]);
     }
-    if (this.wordIndex + 1 < this.sampleArray.length && !this.prevKeyWasSpace) {
+    if (wordIndex + 1 < sampleArray.length && !prevKeyWasSpace) {
       this.wordIndex += 1;
     }
     this.prevKeyWasSpace = true;
   }
 
   handleInputKey(event) {
+    const {sampleArray, wordIndex, wordIC } = this;
     let correctKey = "";
-    if (this.wordIC[this.wordIndex] < this.sampleArray[this.wordIndex].length) {
-      correctKey = this.sampleArray[this.wordIndex].charAt(
-        this.wordIC[this.wordIndex]
+    if (wordIC[wordIndex] < sampleArray[wordIndex].length) {
+      correctKey = sampleArray[wordIndex].charAt(
+        wordIC[wordIndex]
       );
     }
 
@@ -143,7 +155,7 @@ class Tester extends Component {
       this.handleErrorKey(correctKey.toLowerCase());
     }
 
-    this.wordIC[this.wordIndex] += 1;
+    this.wordIC[wordIndex] += 1;
     this.prevKeyWasSpace = false;
     this.setState({
       testStart: true
@@ -160,20 +172,21 @@ class Tester extends Component {
   }
 
   handleErrorKey(correctKey) {
-    this.addToWordErrorList(this.sampleArray[this.wordIndex]);
+    const {sampleArray, wordIndex, wordIC, wordCount, errorList } = this;
+    this.addToWordErrorList(sampleArray[wordIndex]);
 
     if (
-      correctKey in this.errorList &&
-      this.wordIC[this.wordIndex] < this.wordCount[this.wordIndex]
+      correctKey in errorList &&
+      wordIC[wordIndex] < wordCount[wordIndex]
     ) {
       this.errorList[correctKey] += 1;
     } else {
       this.errorList[correctKey] = 1;
     }
 
-    if (this.wordIC[this.wordIndex] < this.sampleArray[this.wordIndex].length) {
+    if (wordIC[wordIndex] < sampleArray[wordIndex].length) {
       this.errorLocations.push(
-        this.wordCount[this.wordIndex] + this.wordIC[this.wordIndex]
+        wordCount[wordIndex] + wordIC[wordIndex]
       );
     }
     this.setState({
@@ -182,29 +195,29 @@ class Tester extends Component {
   }
 
   handleBackSpace() {
+    const {sampleArray, wordIndex, wordIC, wordCount, errorLocations, spaceErrors } = this;
     this.prevKeyWasSpace = false;
-    if (this.wordIC[this.wordIndex] > this.sampleArray[this.wordIndex].length) {
+    if (wordIC[wordIndex] > sampleArray[wordIndex].length) {
       this.setState({
         errorCount: this.state.errorCount - 1
       });
     }
-    if (this.wordIC[this.wordIndex] !== 0) {
+    if (wordIC[wordIndex] !== 0) {
       //Still on current word, no need to change to prev word
-      this.wordIC[this.wordIndex] -= 1;
-    } else if (this.wordIndex === 0) {
+      this.wordIC[wordIndex] -= 1;
+    } else if (wordIndex === 0) {
       //at first word, do nothing
     } else {
       //Change to prev word
       this.setState({
-        errorCount: this.state.errorCount - this.spaceErrors[this.wordIndex - 1]
+        errorCount: this.state.errorCount - spaceErrors[wordIndex - 1]
       });
-      this.spaceErrors[this.wordIndex - 1] = 0;
+      this.spaceErrors[wordIndex - 1] = 0;
       this.wordIndex -= 1;
     }
     if (
-      this.errorLocations[this.errorLocations.length - 1] -
-        this.wordCount[this.wordIndex] ===
-      this.wordIC[this.wordIndex]
+      errorLocations[errorLocations.length - 1] -
+        wordCount[wordIndex] === wordIC[wordIndex]
     ) {
       this.errorLocations.splice(-1, 1);
       this.setState({
@@ -214,13 +227,15 @@ class Tester extends Component {
   }
 
   updateTime(secs) {
+    const { sampleArray, wordIndex, wordCount, wordIC, spaceErrors } = this;
+    const { input } = this.state;
     let elapsedTime = this.props.timeChoice - secs;
     let fractionOfCurWord = 0.5;
 
-    if (this.wordIndex + 1 !== this.sampleArray.length)
+    if (wordIndex + 1 !== sampleArray.length)
       fractionOfCurWord =
-        this.wordIC[this.wordIndex] /
-        (this.wordCount[this.wordIndex + 1] - this.wordCount[this.wordIndex]);
+        wordIC[wordIndex] /
+        (wordCount[wordIndex + 1] - wordCount[wordIndex]);
 
     if (secs % 5 === 0 && elapsedTime != 0) {
       //time to update speed and accuracy data
@@ -228,10 +243,10 @@ class Tester extends Component {
       this.speedOverTime[idx] = this.state.currentSpeed; //index will = 0, 1, 2 ...
 
       let spaceErrorSum = 0
-      for(var i = 0; i < this.spaceErrors.length; ++i){
-        spaceErrorSum += this.spaceErrors[i]
+      for(var i = 0; i < spaceErrors.length; ++i){
+        spaceErrorSum += spaceErrors[i]
       }
-      let lenOfInput = this.state.input.length + spaceErrorSum;
+      let lenOfInput = input.length + spaceErrorSum;
       if (lenOfInput == 0) {
         lenOfInput = 1;
       } //To avoid divide by 0
@@ -241,21 +256,21 @@ class Tester extends Component {
     }
 
     let wpm = 60
-    if(this.state.input.length != 0)
-      wpm = Math.floor(this.state.input.length / 5 / elapsedTime * 60);
+    if(input.length != 0)
+      wpm = Math.floor(input.length / 5 / elapsedTime * 60);
     this.setState({
       currentSpeed: wpm
     });
   }
 
   highlighted() {
-    let wordIndex = this.state.wordIndex;
-    let remainingWords = this.sampleArray.length - 1 - this.wordIndex;
-    let past = this.sampleArray.slice(0, this.wordIndex).join(" ");
-    let current = " " + this.sampleArray[this.wordIndex];
+    const { sampleArray, wordIndex } = this;
+    let remainingWords = sampleArray.length - 1 - wordIndex;
+    let past = sampleArray.slice(0, wordIndex).join(" ");
+    let current = " " + sampleArray[wordIndex];
     let future = "";
-    if (this.wordIndex < this.sampleArray.length - 1) {
-      future = " " + this.sampleArray.slice(-1 * remainingWords).join(" ");
+    if (wordIndex < sampleArray.length - 1) {
+      future = " " + sampleArray.slice(-1 * remainingWords).join(" ");
     }
 
     return (

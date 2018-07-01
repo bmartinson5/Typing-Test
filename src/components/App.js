@@ -27,6 +27,10 @@ function Greetings(props){
     return (<div className="alert alert-light black" role="alert">Welcome, <b>{props.userName}</b>, you can practice typing below, or start learning how to type like a master! from Train tab above.</div>)
   }
 
+  if(props.started){
+    return (<div></div>)
+  }
+
   return (
     <div className="jumbotron">
       <h1 className="display-4">Welcome!</h1>
@@ -40,12 +44,14 @@ function Greetings(props){
 
 class App extends Component {
   defaultState = {
-      isLoggedIn: false
+      isLoggedIn: false,
+      started: false
     };
 
   constructor(props) {
     super(props);
     this.state = this.defaultState;
+    this.started = this.started.bind(this)
   }
 
 
@@ -54,6 +60,10 @@ class App extends Component {
     if(this.state.isLoggedIn != this.props.user.state.isLoggedIn){
       this.setState({isLoggedIn: this.props.user.state.isLoggedIn})
     }
+  }
+
+  started(){
+    this.setState({ started: true })
   }
 
   render() {
@@ -67,8 +77,8 @@ class App extends Component {
             <HeaderWithRouter data={this.state} logoutHandler={this.props.user.logoutHandler} errorMsg={this.props.user.state.errorMsg}/>
             <Route exact path="/" render={(props) => (
               <div>
-              <Greetings userName={this.props.user.state.userInfo.name}/>
-              <SingleTest {...props} isLoggedIn={this.state.isLoggedIn}/>
+              <Greetings started={this.state.started} userName={this.props.user.state.userInfo.name}/>
+              <SingleTest {...props} started={this.started} isLoggedIn={this.state.isLoggedIn}/>
 
               </div>)}
             />

@@ -11,7 +11,7 @@ import {addRecord} from '../helpers/api'
 
 // top part of the single test, where user selects time and diffuculity
 class ChooseTimeAndDiff extends Component {
-  
+
   constructor(props){
     super(props)
     this.state = {
@@ -97,6 +97,8 @@ class SingleTest extends Component {
   }
 
   applyChange(timeChoice, diffChoice){
+    console.log('here at applyChange')
+    this.props.started()
     this.setState({
       timeChoice: timeChoice,
       diffu: diffChoice
@@ -121,7 +123,7 @@ class SingleTest extends Component {
 
     // console.log(this.props.location.state)
 		return (<div>{!dataShown && !timeChoiceFilled && <ChooseTimeAndDiff handleApply={this.applyChange} /> }
-      <div className="testArea">{!dataShown && timeChoiceFilled 
+      <div className="testArea">{!dataShown && timeChoiceFilled
         && <Tester testHandler={this.testHandler} timeChoice={this.state.timeChoice} training={false} diffu={this.state.diffu} changeTimeHandler={this.changeTimeHandler} />}
       {dataShown && timeChoiceFilled && <DataVis speedOverTime={this.state.speedOverTime} accOverTime={this.state.accOverTime}
         errorKeys={this.state.errorKeys} wordErrors={this.state.wordErrors} />}
