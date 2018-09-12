@@ -1,12 +1,10 @@
 # Type Master: A Typing Test App
 
-A functional type training application built using React, Node and MongoDB
+A typing application built using React, Node and MongoDB
 
 ## Authors:
 
-Ben Martinson: <bmartin5@uoregon.edu>   //Frontend 
-
-Fahad Alarefi: <fahrifi@gmail.com>  	//Backend
+Ben Martinson: <bmartin5@uoregon.edu> 
 
 
 ### Prerequisites:  
