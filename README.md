@@ -4,8 +4,9 @@ A typing application built using React, Node and MongoDB
 
 ## Authors:
 
-Ben Martinson: <bmartin5@uoregon.edu> 
+Ben Martinson - Front End
 
+Fahad Alarefi- Back End 
 
 ### Prerequisites:  
 
