@@ -21,4 +21,4 @@ From the project folder, write this command in the terminal:
 1. npm install
 2. npm run dev
 ```
-Then, enter the mango DB information in server/app.js line 48
+Then, enter the MongoDb information in server/app.js line 48
