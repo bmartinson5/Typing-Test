@@ -2,7 +2,7 @@
 
 A typing application built using React
 
-Demo: http://bit.ly/typing-master
+Link: http://bit.ly/typing-master
 
 ## Authors:
 
