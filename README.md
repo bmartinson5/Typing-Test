@@ -2,9 +2,11 @@
 
 A typing application built using React
 
+Demo: http://bit.ly/typing-master
+
 ## Authors:
 
-Ben Martinson 
+Ben Martinson, Fahad Alarefi (https://github.com/createdbyfahad)
 
 ## Setup/Installation Requirements
 
@@ -35,5 +37,5 @@ Javascript, React
 
 MIT License
 
-Copyright (c) 2019, Ben Martinson
+Copyright (c) 2019, Ben Martinson, Fahad Alarefi 
 
