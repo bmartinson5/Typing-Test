@@ -1,12 +1,10 @@
 # Type Master: A Typing Test App
 
-A typing application built using React, Node and MongoDB
+A typing application built using React
 
 ## Authors:
 
-Ben Martinson - Front End
-
-Fahad Alarefi- Back End 
+Ben Martinson 
 
 ### Prerequisites:  
 
@@ -17,9 +15,8 @@ Required to install and run the software:
 
 #### Installing Prerequisites:  
 
-From the project folder, write this command in the terminal:
+From the project folder, type these commands in the terminal:
 ```
 1. npm install
 2. npm run dev
 ```
-Then, enter the MongoDb information in server/app.js line 48
